@@ -295,7 +295,8 @@ ui <- dashboardPage(
                                 "Number of top subjects per race:",
                                 choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
                                 selected = 10),
-                    plotOutput("students_racePlot", height = "800px")
+                    plotOutput("students_racePlot", height = "800px"),
+                    p("Participation patterns differ strongly by race: English and U.S. History subjects attract broad participation across all groups, STEM subjects show noticeably higher representation from Asian students, and Spanish Language is heavily concentrated among Hispanic/Latino students. These trends suggest that course availability, school demographics, and academic tracking influence which AP subjects students take.")
                 )
               )
       ),
@@ -314,7 +315,8 @@ ui <- dashboardPage(
                                 "Number of most popular subjects:",
                                 choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
                                 selected = 10),
-                    plotOutput("students_gradePlot", height = "520px")
+                    plotOutput("students_gradePlot", height = "520px"),
+                    p("Upper-level AP courses such as Calculus AB, Biology, and U.S. Government are mostly taken by 11th–12th graders, while entry-level courses like Human Geography and World History show large participation from 9th–10th graders. This pattern reflects typical prerequisite pathways in U.S. schools and highlights when students gain access to advanced coursework.")
                 )
               )
       ),
