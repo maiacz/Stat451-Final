@@ -212,12 +212,6 @@ ui <- dashboardPage(
                                 selected = 10),
                     plotOutput("students_racePlot", height = "800px")
                 )
-              ),
-              fluidRow(
-                box(width = 12, status = "info", solidHeader = TRUE,
-                    title = "Static: Heatmap of AP Subject Participation by Race (Top 10)",
-                    plotOutput("students_racePlot_static", height = "800px")
-                )
               )
       ),
       
@@ -230,12 +224,6 @@ ui <- dashboardPage(
                                 choices = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
                                 selected = 10),
                     plotOutput("students_gradePlot", height = "520px")
-                )
-              ),
-              fluidRow(
-                box(width = 12, status = "info", solidHeader = TRUE,
-                    title = "Static: Grade Distribution for Most Taken AP Subjects",
-                    plotOutput("students_gradePlot_static", height = "520px")
                 )
               )
       )
@@ -295,21 +283,6 @@ server <- function(input, output, session) {
            subtitle = "Data from College Board 2016") +
       theme_bw() +
       theme(axis.text.x = element_text(angle = 60, hjust = 1))
-  })
-  
-  output$racePlot_static <- renderPlot({
-    dat_3_ordered <- dat_3 %>%
-      group_by(Exam_Subject) %>%
-      summarise(mean_score = mean(Avg_Score, na.rm = TRUE)) %>%
-      arrange(mean_score)
-    
-    dat_3$Exam_Subject <- factor(dat_3$Exam_Subject, levels = dat_3_ordered$Exam_Subject)
-    
-    ggplot(dat_3, aes(x = Avg_Score, y = Exam_Subject, color = Race)) +
-      geom_point(size = 2) +
-      theme_bw() +
-      labs(title = "Average AP Score For Different Subjects Separated By Race",
-           x = "Average AP Test Score", y = "Exam Subject")
   })
   
   # Gender Plots
@@ -415,40 +388,7 @@ server <- function(input, output, session) {
         subtitle = paste0("Top ", input$topN_race_students, " subjects per race"),
         x = "Race", y = "AP Subject", fill = "Share"
       ) +
-      theme_minimal(base_size = 14)+theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  })
-  
-  # -----------------------------
-  # Students: Race Static (Top 10)
-  # -----------------------------
-  output$students_racePlot_static <- renderPlot({
-    TOP_N <- 10
-    race_long <- students1 %>%
-      select(Exam.Subject, all_of(race_cols)) %>%
-      pivot_longer(cols = all_of(race_cols), names_to = "Race", values_to = "Count") %>%
-      mutate(
-        Count = coalesce(Count, 0),
-        Race = factor(Race, levels = race_cols)
-      ) %>%
-      group_by(Race) %>%
-      mutate(share = Count / sum(Count, na.rm = TRUE)) %>%
-      ungroup()
-    
-    race_long_f <- race_long %>%
-      group_by(Race) %>%
-      slice_max(order_by = share, n = TOP_N, with_ties = FALSE) %>%
-      ungroup() %>%
-      group_by(Exam.Subject) %>%
-      mutate(max_share = max(share)) %>%
-      ungroup() %>%
-      mutate(Exam.Subject = fct_reorder(Exam.Subject, max_share))
-    
-    ggplot(race_long_f, aes(x = Race, y = Exam.Subject, fill = share)) +
-      geom_tile(color = "white", linewidth = 0.2) +
-      scale_fill_viridis_c(labels = scales::percent, option = "C") +
-      scale_y_discrete(labels = function(x) stringr::str_wrap(x, width = 30)) +
-      labs(x = "Race", y = "AP Subject", fill = "Share") +
-      theme_minimal(base_size = 13)+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      theme_minimal(base_size = 14)+theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.grid=element_blank())
   })
   
   # -----------------------------
@@ -485,41 +425,7 @@ server <- function(input, output, session) {
         subtitle = paste0("Top ", input$topK_grade_students, " subjects shown"),
         x = "AP Subject", y = "Share of test takers", fill = "Grade"
       ) +
-      theme_minimal(base_size = 13)
-  })
-  
-  # -----------------------------
-  # Students: Grade Static (Top 10)
-  # -----------------------------
-  output$students_gradePlot_static <- renderPlot({
-    top_k <- 10
-    top_subjects <- students2 %>%
-      slice_max(order_by = total_grade_sum, n = top_k, with_ties = FALSE) %>%
-      pull(Exam.Subject)
-    
-    grade_long <- students2 %>%
-      filter(Exam.Subject %in% top_subjects) %>%
-      select(Exam.Subject, all_of(grade_cols)) %>%
-      pivot_longer(all_of(grade_cols), names_to = "Grade", values_to = "Count") %>%
-      mutate(
-        Count = coalesce(Count, 0),
-        Grade = factor(Grade, levels = grade_cols)
-      ) %>%
-      group_by(Exam.Subject) %>%
-      mutate(
-        subject_total = sum(Count, na.rm = TRUE),
-        pct = if_else(subject_total > 0, Count / subject_total, 0)
-      ) %>%
-      ungroup() %>%
-      mutate(Exam.Subject = fct_relevel(Exam.Subject, top_subjects))
-    
-    ggplot(grade_long, aes(x = Exam.Subject, y = pct, fill = Grade)) +
-      geom_col(position = "fill") +
-      coord_flip() +
-      scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-      scale_fill_brewer(palette = "Set2") +
-      labs(x = "AP Subject", y = "Share of test takers", fill = "Grade") +
-      theme_minimal(base_size = 13)
+      theme_minimal(base_size = 13)+theme(panel.grid=element_blank())
   })
   
 }
