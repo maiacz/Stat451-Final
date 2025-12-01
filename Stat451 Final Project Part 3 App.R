@@ -163,7 +163,6 @@ ui <- dashboardPage(
       menuItem("Race & AP Score",    tabName = "race",           icon = icon("users")),
       menuItem("Gender & AP Score",  tabName = "gender",         icon = icon("venus-mars")),
       menuItem("Race & AP Subject",  tabName = "students_race",  icon = icon("th")),
-      menuItem("Grade & AP Subject", tabName = "students_grade", icon = icon("user-graduate")),
       menuItem("Exam Popularity",    tabName = "popularity",     icon = icon("star")),
       menuItem("Score Analysis",     tabName = "scores",         icon = icon("bar-chart"))
     )
@@ -322,10 +321,18 @@ ui <- dashboardPage(
       ),
       
       #----------------------------------------------------
-      # Exam Popularity (Conan's: exams.csv, second read)
+      # Exam Popularity (students.csv, Conan's: exams.csv)
       #----------------------------------------------------
       tabItem(tabName = "popularity",
               h2("What AP Classes Are Most Popular?", style = "text-align:center;"),
+              fluidRow(
+                box(width = 12,
+                    status = "info",
+                    solidHeader = TRUE,
+                    title = "Static: Full Ranking — Most Taken AP Exams (2016)",
+                    plotOutput("pop_plot_static", height = "520px")
+                )
+              ),
               fluidRow(
                 box(width = 12,
                     status = "primary",
@@ -341,10 +348,15 @@ ui <- dashboardPage(
               ),
               fluidRow(
                 box(width = 12,
-                    status = "info",
+                    status = "primary",
                     solidHeader = TRUE,
-                    title = "Static: Full Ranking — Most Taken AP Exams (2016)",
-                    plotOutput("pop_plot_static", height = "520px")
+                    title = "AP Subject Popularity by Grade",
+                    selectInput("topK_grade_students",
+                                "Number of most popular subjects:",
+                                choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
+                                selected = 10),
+                    plotOutput("students_gradePlot", height = "520px"),
+                    p("Upper-level AP courses such as Calculus AB, Biology, and U.S. Government are mostly taken by 11th–12th graders, while entry-level courses like Human Geography and World History show large participation from 9th–10th graders. This pattern reflects typical prerequisite pathways in U.S. schools and highlights when students gain access to advanced coursework.")
                 )
               )
       ),
