@@ -159,12 +159,10 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Grade",              tabName = "grade",          icon = icon("graduation-cap")),
-      menuItem("Subject",            tabName = "subject",        icon = icon("book")),
-      menuItem("Race & AP Score",    tabName = "race",           icon = icon("users")),
+      menuItem("Score Analysis",     tabName = "scores",         icon = icon("bar-chart")),
+      menuItem("Race",               tabName = "race",           icon = icon("users")),
       menuItem("Gender & AP Score",  tabName = "gender",         icon = icon("venus-mars")),
-      menuItem("Race & AP Subject",  tabName = "students_race",  icon = icon("th")),
-      menuItem("Exam Popularity",    tabName = "popularity",     icon = icon("star")),
-      menuItem("Score Analysis",     tabName = "scores",         icon = icon("bar-chart"))
+      menuItem("Exam Popularity",    tabName = "popularity",     icon = icon("star"))
     )
   ),
   
@@ -194,10 +192,10 @@ ui <- dashboardPage(
       ),
       
       #----------------------------------------------------
-      # Subject Tab (Overall score by subject)
+      # Score Analysis 
       #----------------------------------------------------
-      tabItem(tabName = "subject",
-              h2("Does AP Class Subject Affect AP Score?", style = "text-align:center;"),
+      tabItem(tabName = "scores",
+              h2("What is the Average Score For Each Subject and the Percentage of Students That Are Above the Average Score?", style = "text-align:center;"),
               fluidRow(
                 box(width = 12,
                     title = "Average Exam Score by Subject",
@@ -208,164 +206,11 @@ ui <- dashboardPage(
                       "Select Subject(s):",
                       choices  = unique(subject_scores$Exam.Subject),
                       selected = unique(subject_scores$Exam.Subject)[1:10],
-                      multiple = TRUE
-                    ),
+                      multiple = TRUE),
                     plotlyOutput("subjectPlot", height = "600px"),
                     p("Unexpectedly, some courses that may be percieved as easier showed lower scores than classes that are traditionally thought of as difficult (e.g. Art History has a lower average score than Physics C: Mechanics). Harder AP classes are typically taken by people who are very interested in the topic, and therefore put in a lot of effort into the subject. Conversely, subjects like AP Art History may be seen as an easier AP, and taken just to get credit, but as less effort is put into the class, the lower the overall score is.")
                 )
-              )
-      ),
-      
-      #----------------------------------------------------
-      # Race & AP Score (exams.csv)
-      #----------------------------------------------------
-      tabItem(tabName = "race",
-              h2("Does Race Affect Average AP Score?", style = "text-align:center;"),
-              fluidRow(
-                box(
-                  width = 12,
-                  title = "Interactive Race Plot: Average AP Score By Race",
-                  status = "primary",
-                  solidHeader = TRUE,
-                  selectInput(
-                    "subject_race",
-                    "Choose Exam Subject(s):",
-                    choices  = sort(unique(race_score_long$Exam_Subject)),
-                    selected = c("BIOLOGY", "CALCULUS AB"),
-                    multiple = TRUE
-                  ),
-                  plotOutput("racePlot_interactive", height = "450px")
-                )
               ),
-              fluidRow(
-                box(
-                  width = 12,
-                  title = "Static Race Plot: Overall Race Trends",
-                  status = "info",
-                  solidHeader = TRUE,
-                  plotOutput("racePlot_static", height = "450px")
-                )
-              )
-      ),
-      
-      #----------------------------------------------------
-      # Gender & AP Score (exams.csv)
-      #----------------------------------------------------
-      tabItem(tabName = "gender",
-              h2("Does Gender Affect Average AP Score?", style = "text-align:center;"),
-              fluidRow(
-                box(
-                  width = 12,
-                  title = "Average AP Score By Gender",
-                  status = "primary",
-                  solidHeader = TRUE,
-                  selectInput(
-                    "subject_gender",
-                    "Choose Exam Subject(s):",
-                    choices  = sort(unique(gender_score_long$Exam_Subject)),
-                    selected = c("BIOLOGY", "CALCULUS AB"),
-                    multiple = TRUE
-                  ),
-                  plotOutput("genderPlot", height = "450px")
-                )
-              ),
-              fluidRow(
-                box(
-                  width = 12,
-                  title = "Static Gender Plot: Overall Gender Trends",
-                  status = "info",
-                  solidHeader = TRUE,
-                  plotOutput("GenderPlot_static", height = "450px")
-                )
-              )
-      ),
-      
-      #----------------------------------------------------
-      # Race & AP Subject (students.csv)
-      #----------------------------------------------------
-      tabItem(tabName = "students_race",
-              h2("Does Race Affect What AP Course Is Taken?", style = "text-align:center;"),
-              fluidRow(
-                box(width = 12,
-                    status = "primary",
-                    solidHeader = TRUE,
-                    title = "AP Subject Participation by Race",
-                    selectInput("topN_race_students",
-                                "Number of top subjects per race:",
-                                choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
-                                selected = 10),
-                    plotOutput("students_racePlot", height = "800px"),
-                    p("Participation patterns differ strongly by race: English and U.S. History subjects attract broad participation across all groups, STEM subjects show noticeably higher representation from Asian students, and Spanish Language is heavily concentrated among Hispanic/Latino students. These trends suggest that course availability, school demographics, and academic tracking influence which AP subjects students take.")
-                )
-              )
-      ),
-      
-      #----------------------------------------------------
-      # Grade & AP Subject (students.csv)
-      #----------------------------------------------------
-      tabItem(tabName = "students_grade",
-              h2("Does AP Class Popularity Vary Based On Grade?", style = "text-align:center;"),
-              fluidRow(
-                box(width = 12,
-                    status = "primary",
-                    solidHeader = TRUE,
-                    title = "AP Subject Grade Mix",
-                    selectInput("topK_grade_students",
-                                "Number of most popular subjects:",
-                                choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
-                                selected = 10),
-                    plotOutput("students_gradePlot", height = "520px"),
-                    p("Upper-level AP courses such as Calculus AB, Biology, and U.S. Government are mostly taken by 11th–12th graders, while entry-level courses like Human Geography and World History show large participation from 9th–10th graders. This pattern reflects typical prerequisite pathways in U.S. schools and highlights when students gain access to advanced coursework.")
-                )
-              )
-      ),
-      
-      #----------------------------------------------------
-      # Exam Popularity (students.csv, Conan's: exams.csv)
-      #----------------------------------------------------
-      tabItem(tabName = "popularity",
-              h2("What AP Classes Are Most Popular?", style = "text-align:center;"),
-              fluidRow(
-                box(width = 12,
-                    status = "info",
-                    solidHeader = TRUE,
-                    title = "Static: Full Ranking — Most Taken AP Exams (2016)",
-                    plotOutput("pop_plot_static", height = "520px")
-                )
-              ),
-              fluidRow(
-                box(width = 12,
-                    status = "primary",
-                    solidHeader = TRUE,
-                    title = "Interactive: AP Exams Student Count",
-                    selectInput("pop_subjects",
-                                "Choose Exam Subject(s):",
-                                choices  = subjects,
-                                selected = intersect(c("BIOLOGY", "CALCULUS AB"), subjects),
-                                multiple = TRUE),
-                    plotOutput("pop_plot_interactive", height = "420px")
-                )
-              ),
-              fluidRow(
-                box(width = 12,
-                    status = "primary",
-                    solidHeader = TRUE,
-                    title = "AP Subject Popularity by Grade",
-                    selectInput("topK_grade_students",
-                                "Number of most popular subjects:",
-                                choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
-                                selected = 10),
-                    plotOutput("students_gradePlot", height = "520px"),
-                    p("Upper-level AP courses such as Calculus AB, Biology, and U.S. Government are mostly taken by 11th–12th graders, while entry-level courses like Human Geography and World History show large participation from 9th–10th graders. This pattern reflects typical prerequisite pathways in U.S. schools and highlights when students gain access to advanced coursework.")
-                )
-              )
-      ),
-      
-      #----------------------------------------------------
-      # Score Analysis (Conan's: exams.csv, second read)
-      #----------------------------------------------------
-      tabItem(tabName = "scores",
-              h2("What Percent Of Students Are Above The Average Score For Each AP Exam?", style = "text-align:center;"),
               fluidRow(
                 box(width = 12, 
                     status = "primary", 
@@ -387,10 +232,133 @@ ui <- dashboardPage(
                     plotOutput("score_plot_static", height = "520px")
                 )
               )
+      ),
+      
+      #----------------------------------------------------
+      # Race & AP Score (exams.csv)
+      #----------------------------------------------------
+      tabItem(tabName = "race",
+              h2("Does Race Affect Average AP Score and Participation?", style = "text-align:center;"),
+              fluidRow(
+                box(
+                  width = 12,
+                  title = "Interactive Race Plot: Average AP Score by Race",
+                  status = "primary",
+                  solidHeader = TRUE,
+                  selectInput(
+                    "subject_race",
+                    "Choose Exam Subject(s):",
+                    choices  = sort(unique(race_score_long$Exam_Subject)),
+                    selected = c("BIOLOGY", "CALCULUS AB"),
+                    multiple = TRUE
+                  ),
+                  plotOutput("racePlot_interactive", height = "450px")
+                )
+              ),
+              fluidRow(
+                box(
+                  width = 12,
+                  title = "Static Race Plot: Overall Race Trends",
+                  status = "info",
+                  solidHeader = TRUE,
+                  plotOutput("racePlot_static", height = "450px"),
+                  p("Races including Asian, White, and two or more races generally score higher than Hispanic/Latino, Black, Indian Alaska Native, and Hawaiian Pacific Islander.")
+                )
+              ),
+              fluidRow(
+                box(width = 12,
+                    status = "primary",
+                    solidHeader = TRUE,
+                    title = "AP Subject Participation by Race",
+                    selectInput("topN_race_students",
+                                "Number of top subjects per race:",
+                                choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
+                                selected = 10),
+                    plotOutput("students_racePlot", height = "800px"),
+                    p("Participation patterns differ strongly by race: English and U.S. History subjects attract broad participation across all groups, STEM subjects show noticeably higher representation from Asian students, and Spanish Language is heavily concentrated among Hispanic/Latino students. These trends suggest that course availability, school demographics, and academic tracking influence which AP subjects students take.")
+                )
+              )  
+      ),
+      
+      
+      #----------------------------------------------------
+      # Gender & AP Score (exams.csv)
+      #----------------------------------------------------
+      tabItem(tabName = "gender",
+              h2("Does Gender Affect Average AP Score?", style = "text-align:center;"),
+              fluidRow(
+                box(
+                  width = 12,
+                  title = "Average AP Score by Gender",
+                  status = "primary",
+                  solidHeader = TRUE,
+                  selectInput(
+                    "subject_gender",
+                    "Choose Exam Subject(s):",
+                    choices  = sort(unique(gender_score_long$Exam_Subject)),
+                    selected = c("BIOLOGY", "CALCULUS AB"),
+                    multiple = TRUE
+                  ),
+                  plotOutput("genderPlot", height = "450px")
+                )
+              ),
+              fluidRow(
+                box(
+                  width = 12,
+                  title = "Static Gender Plot: Overall Gender Trends",
+                  status = "info",
+                  solidHeader = TRUE,
+                  plotOutput("GenderPlot_static", height = "450px"),
+                  p("Males for most subjects score slightly higher than females. There are only 11/37 subjects where females score higher, four of them are language related, three are art related, and two are english and literature related.")
+                )
+              )
+      ),
+      
+      
+      #----------------------------------------------------
+      # Exam Popularity (Conan's: exams.csv, second read)
+      #----------------------------------------------------
+      tabItem(tabName = "popularity",
+              fluidRow(
+                box(width = 12,
+                    status = "info",
+                    solidHeader = TRUE,
+                    title = "Static: Full Ranking",
+                    plotOutput("pop_plot_static", height = "520px")
+                )
+              ), 
+              h2("What AP Classes Are Most Popular?", style = "text-align:center;"),
+              fluidRow(
+                box(width = 12,
+                    status = "primary",
+                    solidHeader = TRUE,
+                    title = "Interactive: AP Exams Student Count",
+                    selectInput("pop_subjects",
+                                "Choose Exam Subject(s):",
+                                choices  = subjects,
+                                selected = intersect(c("BIOLOGY", "CALCULUS AB"), subjects),
+                                multiple = TRUE),
+                    plotOutput("pop_plot_interactive", height = "420px")
+                )
+              ),
+              fluidRow(
+                box(width = 12,
+                    status = "primary",
+                    solidHeader = TRUE,
+                    title = "AP Subject Grade Mix",
+                    selectInput("topK_grade_students",
+                                "Number of most popular subjects:",
+                                choices  = c("5" = 5, "10" = 10, "15" = 15, "20" = 20, "30" = 30, "All Subjects" = 37),
+                                selected = 10),
+                    plotOutput("students_gradePlot", height = "520px"),
+                    p("Upper-level AP courses such as Calculus AB, Biology, and U.S. Government are mostly taken by 11th and 12th graders, while entry-level courses like Human Geography and World History show large participation from 9th and 10th graders. This pattern reflects typical prerequisite pathways in U.S. schools and highlights when students gain access to advanced coursework.")
+                )
+              )
       )
     )
   )
 )
+
 
 #==========================================================
 # 4. SERVER
@@ -445,7 +413,7 @@ server <- function(input, output, session) {
       geom_col() +
       facet_wrap(~ Exam_Subject, ncol = 2, scales = "free_y") +
       labs(
-        title    = "Average AP Score By Race For Selected Subjects",
+        title    = "Average AP Score by Race For Selected Subjects",
         x        = "Race (Ordered by Average Score)",
         y        = "Average AP Score",
         subtitle = "Data from College Board 2016"
@@ -469,7 +437,8 @@ server <- function(input, output, session) {
     ggplot(race_score_long, aes(x = Avg_Score, y = Exam_Subject, color = Race)) +
       geom_point(size = 2) +
       labs(
-        title = "Average AP Score For Different Subjects Separated By Race",
+        title = "Average AP Score For Different Subjects Separated by Race",
+        subtitle = "Data From College Scoreboard 2016 \nSubjects ordered by overall average AP score",
         x     = "Average AP Test Score",
         y     = "Exam Subject"
       ) +
@@ -491,6 +460,7 @@ server <- function(input, output, session) {
       scale_fill_manual(values = c("Male" = "blue", "Female" = "red")) +
       labs(
         title = "Average AP Score by Gender (Selected Subjects)",
+        subtitle = "Data From College Scoreboard 2016",
         x = "Gender", y = "Average AP Score"
       ) +
       theme_bw()
@@ -525,11 +495,14 @@ server <- function(input, output, session) {
     ggplot(dat_plot, aes(x = Avg_Score, y = Exam_Subject, color = Gender)) +
       geom_point() +
       scale_color_manual(values = c("Male" = "blue", "Female" = "red")) +
+      scale_x_continuous(limits = c(0, 5), breaks = seq(0, 5),
+                         expand = expansion(mult = c(0.05, 0.1))) +
       scale_y_discrete(labels = label_fun) +
       labs(
         title = "Average AP Score by Gender (All Subjects)",
+        subtitle = "Data From College Scoreboard 2016 (Ordered by Subject Average Score) \n * indicates subjects where Female average is more than Male average",
         x = "Average AP Score",
-        y = "Exam Subject\n(* = Female average > Male average)"
+        y = "Exam Subject"
       ) +
       theme_bw()
   })
