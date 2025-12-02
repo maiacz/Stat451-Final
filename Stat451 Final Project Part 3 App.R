@@ -161,7 +161,7 @@ ui <- dashboardPage(
       menuItem("Grade",              tabName = "grade",          icon = icon("graduation-cap")),
       menuItem("Score Analysis",     tabName = "scores",         icon = icon("bar-chart")),
       menuItem("Race",               tabName = "race",           icon = icon("users")),
-      menuItem("Gender & AP Score",  tabName = "gender",         icon = icon("venus-mars")),
+      menuItem("Gender",  tabName = "gender",         icon = icon("venus-mars")),
       menuItem("Exam Popularity",    tabName = "popularity",     icon = icon("star"))
     )
   ),
